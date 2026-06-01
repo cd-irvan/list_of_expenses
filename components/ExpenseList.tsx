@@ -1,15 +1,12 @@
 "use client";
 
-import { CATEGORIES, type Expense, type UserName } from "@/lib/types";
+import { type CategoryId, type Expense, type UserName } from "@/lib/types";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface ExpenseListProps {
   expenses: Expense[];
   currentUser: UserName;
   onDeleted: (expenses: Expense[]) => void;
-}
-
-function emojiFor(categoryId: string) {
-  return CATEGORIES.find((c) => c.id === categoryId)?.emoji ?? "🧾";
 }
 
 function formatDate(iso: string) {
@@ -50,7 +47,7 @@ export function ExpenseList({ expenses, currentUser, onDeleted }: ExpenseListPro
         const own = e.user === currentUser;
         return (
           <li key={e.id} className="flex items-center gap-3 px-3 py-3">
-            <span className="text-2xl leading-none">{emojiFor(e.category)}</span>
+            <CategoryIcon id={e.category as CategoryId} className="h-7 w-7 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="truncate font-medium">{e.description}</div>
               <div className="text-xs text-ink/60">

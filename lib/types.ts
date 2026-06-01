@@ -12,15 +12,14 @@ export type CategoryId =
 export interface Category {
   id: CategoryId;
   label: string;
-  emoji: string;
 }
 
 export const CATEGORIES: Category[] = [
-  { id: "restaurant", label: "Restaurant", emoji: "🍽️" },
-  { id: "grocery", label: "Grocery", emoji: "🛒" },
-  { id: "visits", label: "Visits", emoji: "👋" },
-  { id: "train", label: "Train", emoji: "🚆" },
-  { id: "misc", label: "Misc.", emoji: "🧾" },
+  { id: "restaurant", label: "Restaurant" },
+  { id: "grocery", label: "Grocery" },
+  { id: "visits", label: "Visits" },
+  { id: "train", label: "Train" },
+  { id: "misc", label: "Misc." },
 ];
 
 export interface Expense {

@@ -21,7 +21,7 @@ function formatParts(
   return { currency, intPadded, dec };
 }
 
-function Digit({ digit }: { digit: string }) {
+export function Digit({ digit }: { digit: string }) {
   const n = Number(digit);
   const offset = `-${n}em`;
   return (

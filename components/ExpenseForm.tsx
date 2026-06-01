@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CATEGORIES, type CategoryId, type Expense, type UserName } from "@/lib/types";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface ExpenseFormProps {
   user: UserName;
@@ -113,7 +114,7 @@ export function ExpenseForm({ user, onAdded }: ExpenseFormProps) {
                     : "bg-paper text-ink shadow-ink hover:-translate-y-[1px]")
                 }
               >
-                <span className="text-xl leading-none">{c.emoji}</span>
+                <CategoryIcon id={c.id} className="h-7 w-7" />
                 <span>{c.label}</span>
               </button>
             );

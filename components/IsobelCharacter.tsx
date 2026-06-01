@@ -14,12 +14,12 @@ export function IsobelCharacter({ className }: { className?: string }) {
       <path d="M52 56 C 52 34, 70 22, 84 24 C 102 27, 114 42, 112 60" />
       {/* face */}
       <path d="M58 60 C 58 86, 68 96, 82 96 C 96 96, 106 86, 106 60" />
-      {/* hair sides flowing down */}
-      <path d="M52 56 C 46 78, 44 104, 50 130" />
-      <path d="M112 60 C 118 80, 122 108, 116 132" />
-      {/* hair strands */}
-      <path d="M56 80 C 52 96, 52 110, 56 122" />
-      <path d="M108 82 C 112 98, 112 112, 110 124" />
+      {/* shoulder-length bob — sides curve out then tuck in around the collarbone */}
+      <path d="M52 56 C 48 74, 47 92, 52 108" />
+      <path d="M112 60 C 116 76, 117 94, 112 110" />
+      {/* hair tips meeting the collar line */}
+      <path d="M52 108 C 56 112, 62 113, 66 110" />
+      <path d="M112 110 C 108 114, 102 115, 98 112" />
       {/* fringe */}
       <path d="M62 52 C 70 48, 78 50, 82 56" />
       <path d="M82 56 C 88 52, 96 50, 104 56" />
