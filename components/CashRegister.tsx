@@ -79,55 +79,63 @@ function valueChars(value: number, layout: SlotLayout, mounted: boolean) {
   });
 }
 
+const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
+
+// A single rolling digit, rendered entirely in SVG so it behaves
+// identically across browsers (Safari mishandles <foreignObject>).
+// Ten <text> digits are stacked vertically and clipped to the slot;
+// the strip is translated to bring the active digit to the centre.
 function RollingDigit({
   digit,
-  size,
-  slotH,
+  slot,
+  fontSize,
+  clipId,
 }: {
   digit: string;
-  size: number;
-  slotH: number;
+  slot: { x: number; y: number; w: number; h: number };
+  fontSize: number;
+  clipId: string;
 }) {
   const n = Number.isFinite(Number(digit)) ? Number(digit) : 0;
+  const cx = slot.x + slot.w / 2;
+  const cy = slot.y + slot.h / 2;
   return (
-    <div
-      style={{
-        width: "100%",
-        height: `${slotH}px`,
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          transform: `translateY(-${n * slotH}px)`,
-          transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
-          willChange: "transform",
-        }}
-      >
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              height: `${slotH}px`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-              fontSize: `${size}px`,
-              fontWeight: 700,
-              lineHeight: 1,
-              color: "#f6f1e7",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            {i}
-          </div>
-        ))}
-      </div>
-    </div>
+    <>
+      <clipPath id={clipId}>
+        <rect
+          x={slot.x}
+          y={slot.y}
+          width={slot.w}
+          height={slot.h}
+          rx="3"
+        />
+      </clipPath>
+      <g clipPath={`url(#${clipId})`}>
+        <g
+          style={{
+            transform: `translateY(${-n * slot.h}px)`,
+            transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        >
+          {Array.from({ length: 10 }).map((_, d) => (
+            <text
+              key={d}
+              x={cx}
+              y={cy + d * slot.h}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontFamily={MONO}
+              fontSize={fontSize}
+              fontWeight={700}
+              fill="#f6f1e7"
+              stroke="none"
+            >
+              {d}
+            </text>
+          ))}
+        </g>
+      </g>
+    </>
   );
 }
 
@@ -135,10 +143,12 @@ function SlotRow({
   layout,
   value,
   mounted,
+  idPrefix,
 }: {
   layout: SlotLayout;
   value: number;
   mounted: boolean;
+  idPrefix: string;
 }) {
   const slots = buildSlots(layout);
   const chars = valueChars(value, layout, mounted);
@@ -163,31 +173,28 @@ function SlotRow({
                 strokeWidth="0.6"
               />
             )}
-            <foreignObject x={s.x} y={s.y} width={s.w} height={s.h}>
-              <div
-                style={{
-                  width: `${s.w}px`,
-                  height: `${s.h}px`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  fontFamily:
-                    "ui-monospace, SFMono-Regular, Menlo, monospace",
-                  fontSize: `${layout.fontSize}px`,
-                  fontWeight: 700,
-                  color: isDot ? "#1a1a1a" : "#f6f1e7",
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
+            {isDigit ? (
+              <RollingDigit
+                digit={c}
+                slot={s}
+                fontSize={layout.fontSize}
+                clipId={`${idPrefix}-clip-${i}`}
+              />
+            ) : (
+              <text
+                x={s.x + s.w / 2}
+                y={s.y + s.h / 2}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontFamily={MONO}
+                fontSize={layout.fontSize}
+                fontWeight={700}
+                fill={isDot ? "#1a1a1a" : "#f6f1e7"}
+                stroke="none"
               >
-                {isDigit ? (
-                  <RollingDigit digit={c} size={layout.fontSize} slotH={s.h} />
-                ) : (
-                  <span style={{ opacity: isDot ? 1 : 0.85 }}>{c}</span>
-                )}
-              </div>
-            </foreignObject>
+                {c}
+              </text>
+            )}
           </g>
         );
       })}
@@ -271,9 +278,9 @@ export function CashRegister({ total, shareLabel, shareValue }: CashRegisterProp
         </text>
 
         {/* digit slots — total */}
-        <SlotRow layout={TOTAL} value={total} mounted={mounted} />
+        <SlotRow layout={TOTAL} value={total} mounted={mounted} idPrefix="total" />
         {/* digit slots — share */}
-        <SlotRow layout={SHARE} value={shareValue} mounted={mounted} />
+        <SlotRow layout={SHARE} value={shareValue} mounted={mounted} idPrefix="share" />
 
         {/* keys grid */}
         {Array.from({ length: 4 }).map((_, col) =>
